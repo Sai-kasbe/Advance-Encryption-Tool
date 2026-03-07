@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Encrypt Images - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="encrypt-container" style="max-width: 800px; margin: 40px auto; padding: 20px; position: relative; z-index: 5;">
+    <div style="margin-bottom: 30px;">
+        <a href="{{ url_for('dashboard') }}" style="text-decoration: none; color: var(--accent-1); font-weight: 700; font-size: 16px; transition: all 0.3s;">← Back to Dashboard</a>
+        <h1 style="font-size: 36px; color: var(--accent-1); margin-top: 15px; font-weight: 900; text-shadow: 0 0 30px rgba(0,245,255,0.3);">📸 Encrypt Images</h1>
+        <p style="color: var(--muted); font-size: 16px; font-weight: 600;">Secure your photos with AES-256 encryption</p>
+    </div>
+
+    <div style="background: rgba(20,25,45,0.85); padding: 40px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); border: 2px solid rgba(0,245,255,0.15); backdrop-filter: blur(12px);">
+        <form action="{{ url_for('encrypt_images') }}" method="POST" enctype="multipart/form-data" id="encryptForm">
+            <!-- File Upload Area -->
+            <div id="uploadArea" style="border: 3px dashed rgba(0,245,255,0.3); padding: 60px; text-align: center; border-radius: 15px; margin-bottom: 30px; cursor: pointer; background: rgba(0,245,255,0.02); transition: all 0.3s;" onclick="document.getElementById('fileInput').click()">
+                <div style="font-size: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 25px rgba(0,245,255,0.4));">📷</div>
+                <h3 style="color: var(--accent-1); margin-bottom: 10px; font-weight: 800; font-size: 22px;">Click to Select Image</h3>
+                <p style="color: var(--muted); font-weight: 600;">Supported: JPG, PNG, GIF, BMP, WebP</p>
+                <input type="file" id="fileInput" name="file" accept="image/*" required hidden>
+            </div>
+
+            <!-- File Preview (Hidden by default) -->
+            <div id="filePreview" style="display: none; background: rgba(0,245,255,0.05); padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 2px solid rgba(0,245,255,0.3);">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <img id="previewImage" src="" style="width: 120px; height: 120px; object-fit: cover; border-radius: 12px; border: 3px solid rgba(0,245,255,0.4);">
+                    <div style="flex: 1;">
+                        <p id="fileName" style="color: var(--accent-1); font-weight: 800; font-size: 18px; margin-bottom: 5px;"></p>
+                        <p id="fileSize" style="color: var(--muted); font-weight: 600; font-size: 14px;"></p>
+                    </div>
+                    <button type="button" onclick="removeFile()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 24px; cursor: pointer; font-weight: 900; box-shadow: 0 6px 20px rgba(239,68,68,0.4);">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; color: var(--accent-1); font-size: 15px;">🔑 Encryption Password</label>
+                <input type="password" name="password" style="width: 100%; padding: 14px; border: 2px solid rgba(0,245,255,0.2); border-radius: 10px; font-size: 16px; background: rgba(0,245,255,0.03); color: var(--soft-white); font-weight: 600;" placeholder="Enter strong password" required>
+            </div>
+
+            <!-- Password Hint -->
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; color: var(--accent-2); font-size: 15px;">💡 Password Hint (Optional)</label>
+                <input type="text" name="hint" style="width: 100%; padding: 14px; border: 2px solid rgba(159,92,255,0.2); border-radius: 10px; font-size: 16px; background: rgba(159,92,255,0.03); color: var(--soft-white); font-weight: 600;" placeholder="e.g., My pet's name + birth year">
+                <small style="display: block; margin-top: 6px; color: var(--muted); font-style: italic; font-size: 13px; font-weight: 600;">This hint will help you remember the password later</small>
+            </div>
+
+            <!-- Shareable Option -->
+            <div style="margin-bottom: 30px;">
+                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                    <input type="checkbox" name="shareable" style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent-1);">
+                    <span style="color: var(--soft-white); font-weight: 600; font-size: 15px;">Make this file shareable with hint</span>
+                </label>
+                <small style="display: block; margin-top: 6px; margin-left: 32px; color: var(--muted); font-style: italic; font-size: 13px; font-weight: 600;">Others can decrypt using your password and hint</small>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" style="width: 100%; padding: 18px; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); color: #02111a; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; box-shadow: 0 8px 30px rgba(0,245,255,0.3); transition: all 0.3s; letter-spacing: 1px;">
+                🔒 ENCRYPT IMAGE
+            </button>
+        </form>
+    </div>
+
+    <!-- Tips Section -->
+    <div style="background: rgba(159,92,255,0.08); padding: 25px; border-radius: 15px; margin-top: 30px; border: 2px solid rgba(159,92,255,0.2);">
+        <h3 style="color: var(--accent-2); margin-bottom: 15px; font-size: 20px; font-weight: 900;">🛡️ Security Tips</h3>
+        <ul style="list-style: none; padding: 0; color: var(--muted); line-height: 2; font-weight: 600;">
+            <li>✓ Use a strong password with letters, numbers, and symbols</li>
+            <li>✓ Password hint should be memorable but not obvious</li>
+            <li>✓ Save your encrypted file in a secure location</li>
+            <li>✓ Never share your password via email or messaging</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const filePreview = document.getElementById('filePreview');
+const previewImage = document.getElementById('previewImage');
+
+// File selection handler
+fileInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+        const file = this.files[0];
+        
+        // Check if it's an image
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = formatFileSize(file.size);
+                
+                // Hide upload area, show preview
+                uploadArea.style.display = 'none';
+                filePreview.style.display = 'block';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    }
+});
+
+// Remove file
+function removeFile() {
+    fileInput.value = '';
+    uploadArea.style.display = 'block';
+    filePreview.style.display = 'none';
+}
+
+// Format file size
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+    else return (bytes / 1048576).toFixed(2) + ' MB';
+}
+
+// Drag and drop
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    });
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => {
+        uploadArea.style.borderColor = 'var(--accent-1)';
+        uploadArea.style.background = 'rgba(0,245,255,0.08)';
+    });
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    uploadArea.addEventListener(eventName, () => {
+        uploadArea.style.borderColor = 'rgba(0,245,255,0.3)';
+        uploadArea.style.background = 'rgba(0,245,255,0.02)';
+    });
+});
+
+uploadArea.addEventListener('drop', function(e) {
+    const files = e.dataTransfer.files;
+    fileInput.files = files;
+    fileInput.dispatchEvent(new Event('change'));
+});
+</script>
+{% endblock %}

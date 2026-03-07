@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 5;">
+
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(20,25,45,0.85); padding: 30px; border-radius: 20px; margin-bottom: 40px; border: 1px solid rgba(0,245,255,0.15); backdrop-filter: blur(12px);">
+        <div>
+            <h1 style="font-size: 36px; color: var(--accent-1); margin-bottom: 8px; text-shadow: 0 0 20px rgba(0,245,255,0.3);">
+                Welcome back, <span style="color: var(--accent-2); font-weight: 900;">{{ username }}</span>! 🚀
+            </h1>
+            <p style="color: var(--muted); font-size: 16px;">Secure your files with military-grade encryption</p>
+        </div>
+        <a href="{{ url_for('logout') }}" style="padding: 12px 24px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; text-decoration: none; border-radius: 10px; font-weight: 700; box-shadow: 0 8px 30px rgba(239,68,68,0.3); transition: all 0.3s;">
+            Logout
+        </a>
+    </div>
+
+    <!-- Encryption Categories -->
+    <h2 style="color: var(--accent-1); margin-bottom: 25px; text-align: center; font-size: 32px; font-weight: 900; text-shadow: 0 0 30px rgba(0,245,255,0.2);">
+        🔐 Choose Encryption Type
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 50px;">
+        <div onclick="window.location.href='{{ url_for('encrypt_images') }}'" style="background: rgba(20,25,45,0.8); padding: 40px; border-radius: 20px; cursor: pointer; text-align: center; transition: all 0.3s; border: 2px solid rgba(0,245,255,0.2); backdrop-filter: blur(8px);" class="category-card">
+            <div style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(0,245,255,0.4));">📸</div>
+            <h3 style="font-size: 24px; margin-bottom: 10px; color: var(--accent-1); font-weight: 800;">Images</h3>
+            <p style="color: var(--muted); font-size: 14px; margin-bottom: 15px;">JPEG, PNG, GIF, BMP</p>
+            <span style="display: inline-block; padding: 10px 24px; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); color: #02111a; border-radius: 20px; font-size: 14px; font-weight: 800;">ENCRYPT</span>
+        </div>
+        
+        <div onclick="window.location.href='{{ url_for('encrypt_documents') }}'" style="background: rgba(20,25,45,0.8); padding: 40px; border-radius: 20px; cursor: pointer; text-align: center; transition: all 0.3s; border: 2px solid rgba(159,92,255,0.2); backdrop-filter: blur(8px);" class="category-card">
+            <div style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(159,92,255,0.4));">📄</div>
+            <h3 style="font-size: 24px; margin-bottom: 10px; color: var(--accent-2); font-weight: 800;">Documents</h3>
+            <p style="color: var(--muted); font-size: 14px; margin-bottom: 15px;">PDF, DOC, PPT, XLS</p>
+            <span style="display: inline-block; padding: 10px 24px; background: linear-gradient(90deg, var(--accent-2), #e85bf9); color: #02111a; border-radius: 20px; font-size: 14px; font-weight: 800;">ENCRYPT</span>
+        </div>
+        
+        <div onclick="window.location.href='{{ url_for('encrypt_media') }}'" style="background: rgba(20,25,45,0.8); padding: 40px; border-radius: 20px; cursor: pointer; text-align: center; transition: all 0.3s; border: 2px solid rgba(1,255,213,0.2); backdrop-filter: blur(8px);" class="category-card">
+            <div style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(1,255,213,0.4));">🎬</div>
+            <h3 style="font-size: 24px; margin-bottom: 10px; color: var(--accent-3); font-weight: 800;">Media</h3>
+            <p style="color: var(--muted); font-size: 14px; margin-bottom: 15px;">MP4, MP3, AVI, MOV</p>
+            <span style="display: inline-block; padding: 10px 24px; background: linear-gradient(90deg, var(--accent-3), #00f5ff); color: #02111a; border-radius: 20px; font-size: 14px; font-weight: 800;">ENCRYPT</span>
+        </div>
+    </div>
+
+    <!-- Decryption Categories -->
+    <h2 style="color: #ff6b9d; margin-bottom: 25px; text-align: center; font-size: 32px; font-weight: 900; text-shadow: 0 0 30px rgba(255,107,157,0.2);">
+        🔓 Decrypt Files
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 50px;">
+        <div onclick="window.location.href='{{ url_for('decrypt_images') }}'" style="background: linear-gradient(135deg, rgba(240,147,251,0.15), rgba(245,87,108,0.15)); padding: 40px; border-radius: 20px; cursor: pointer; text-align: center; border: 2px solid rgba(240,147,251,0.3); backdrop-filter: blur(8px); transition: all 0.3s;" class="category-card">
+            <div style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(240,147,251,0.6));">🖼️</div>
+            <h3 style="font-size: 24px; margin-bottom: 10px; color: #f093fb; font-weight: 800;">Image Files</h3>
+            <span style="display: inline-block; margin-top: 15px; padding: 10px 24px; background: linear-gradient(90deg, #f093fb, #f5576c); color: white; border-radius: 20px; font-size: 14px; font-weight: 800;">DECRYPT</span>
+        </div>
+        
+        <div onclick="window.location.href='{{ url_for('decrypt_documents') }}'" style="background: linear-gradient(135deg, rgba(240,147,251,0.15), rgba(245,87,108,0.15)); padding: 40px; border-radius: 20px; cursor: pointer; text-align: center; border: 2px solid rgba(245,87,108,0.3); backdrop-filter: blur(8px); transition: all 0.3s;" class="category-card">
+            <div style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(245,87,108,0.6));">📑</div>
+            <h3 style="font-size: 24px; margin-bottom: 10px; color: #f5576c; font-weight: 800;">Document Files</h3>
+            <span style="display: inline-block; margin-top: 15px; padding: 10px 24px; background: linear-gradient(90deg, #f5576c, #ff8fc8); color: white; border-radius: 20px; font-size: 14px; font-weight: 800;">DECRYPT</span>
+        </div>
+        
+        <div onclick="window.location.href='{{ url_for('decrypt_media') }}'" style="background: linear-gradient(135deg, rgba(240,147,251,0.15), rgba(245,87,108,0.15)); padding: 40px; border-radius: 20px; cursor: pointer; text-align: center; border: 2px solid rgba(255,143,200,0.3); backdrop-filter: blur(8px); transition: all 0.3s;" class="category-card">
+            <div style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(255,143,200,0.6));">🎵</div>
+            <h3 style="font-size: 24px; margin-bottom: 10px; color: #ff8fc8; font-weight: 800;">Media Files</h3>
+            <span style="display: inline-block; margin-top: 15px; padding: 10px 24px; background: linear-gradient(90deg, #ff8fc8, #f093fb); color: white; border-radius: 20px; font-size: 14px; font-weight: 800;">DECRYPT</span>
+        </div>
+    </div>
+
+    <!-- Quick Stats + View Shares -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 15px; margin-bottom: 10px;">
+        <h2 style="color: var(--accent-1); font-size: 22px; font-weight: 800; margin: 0;">
+            📈 Encryption Summary
+        </h2>
+        <a href="{{ url_for('my_shares') }}" class="stat-link">View Shares</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px;">
+        <div style="background: rgba(20,25,45,0.8); padding: 30px; border-radius: 20px; display: flex; align-items: center; gap: 20px; border: 2px solid rgba(0,245,255,0.15); backdrop-filter: blur(8px);">
+            <div style="font-size: 56px; filter: drop-shadow(0 0 20px rgba(0,245,255,0.5));">🔐</div>
+            <div>
+                <h3 style="font-size: 36px; color: var(--accent-1); margin-bottom: 5px; font-weight: 900;">{{ encrypt_count }}</h3>
+                <p style="color: var(--muted); font-weight: 600;">Files Encrypted</p>
+            </div>
+        </div>
+        <div style="background: rgba(20,25,45,0.8); padding: 30px; border-radius: 20px; display: flex; align-items: center; gap: 20px; border: 2px solid rgba(159,92,255,0.15); backdrop-filter: blur(8px);">
+            <div style="font-size: 56px; filter: drop-shadow(0 0 20px rgba(159,92,255,0.5));">🔓</div>
+            <div>
+                <h3 style="font-size: 36px; color: var(--accent-2); margin-bottom: 5px; font-weight: 900;">{{ decrypt_count }}</h3>
+                <p style="color: var(--muted); font-weight: 600;">Files Decrypted</p>
+            </div>
+        </div>
+        <div style="background: rgba(20,25,45,0.8); padding: 30px; border-radius: 20px; display: flex; align-items: center; gap: 20px; border: 2px solid rgba(1,255,213,0.15); backdrop-filter: blur(8px);">
+            <div style="font-size: 56px; filter: drop-shadow(0 0 20px rgba(1,255,213,0.5));">💾</div>
+            <div>
+                <h3 style="font-size: 36px; color: var(--accent-3); margin-bottom: 5px; font-weight: 900;">{{ total_size }}</h3>
+                <p style="color: var(--muted); font-weight: 600;">Total Data</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div style="background: rgba(20,25,45,0.85); padding: 40px; border-radius: 20px; border: 2px solid rgba(0,245,255,0.15); backdrop-filter: blur(12px);">
+        <h2 style="margin-bottom: 25px; color: var(--accent-1); font-size: 28px; font-weight: 900; text-shadow: 0 0 20px rgba(0,245,255,0.2);">
+            📊 Recent Activity
+        </h2>
+        {% if history %}
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for item in history %}
+            <div style="display: flex; align-items: center; gap: 20px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s;" class="history-item">
+                <div style="font-size: 48px; filter: drop-shadow(0 0 15px rgba(0,245,255,0.3));">
+                    {% if item.category == 'images' %}📸
+                    {% elif item.category == 'documents' %}📄
+                    {% else %}🎬{% endif %}
+                </div>
+                <div style="flex: 1;">
+                    <p style="font-weight: 700; margin-bottom: 5px; color: var(--soft-white); font-size: 16px;">
+                        {{ item.filename }}
+                    </p>
+                    <small style="color: var(--muted); font-size: 13px; font-weight: 600;">
+                        {{ item.operation }} • {{ item.category }} • {{ item.timestamp }}
+                        {% if item.integrity_status == 'failed' %}
+                            • <span class="integrity-failed">Integrity: FAILED</span>
+                        {% elif item.integrity_status == 'ok' %}
+                            • <span class="integrity-ok">Integrity: OK</span>
+                        {% else %}
+                            • Integrity: N/A
+                        {% endif %}
+                    </small>
+
+                </div>
+
+                <!-- Share button only for encrypted entries -->
+                {% if item.operation == 'encrypt' %}
+                <a href="{{ url_for('share_file', file_id=item.id) }}"
+                   class="btn-share-inline"
+                   style="margin-right: 8px;">
+                    🔗 Share
+                </a>
+                {% endif %}
+
+                {% if item.stored_path %}
+                <a href="{{ url_for('download_history', file_id=item.id) }}"
+                   style="padding: 12px 24px; background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; border-radius: 10px; font-weight: 800; box-shadow: 0 6px 25px rgba(16,185,129,0.3); transition: all 0.3s; font-size: 14px;">
+                    ⬇️ Download
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align: center; color: var(--muted); padding: 60px; font-size: 18px; font-weight: 600;">
+            No activity yet. Start encrypting files! 🚀
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

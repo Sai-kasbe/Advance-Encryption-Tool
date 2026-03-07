@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}My Shares - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="shares-container">
+  <div class="shares-header">
+    <h2>📊 All Shared Links</h2>
+    <p>Total Shares: <strong>{{ shares|length }}</strong></p>
+  </div>
+
+  {% if shares and shares|length > 0 %}
+    <div class="shares-list">
+      {% for s in shares %}
+      <div class="share-card">
+        <div class="share-main">
+          <div class="share-file">
+            <h3>{{ s.filename }}</h3>
+            <p class="share-meta">
+              Category: {{ s.category }} · Created: {{ s.created_at }} · Expires: {{ s.expires_at }}
+            </p>
+
+            <p style="margin-top:8px; font-size:13px; color:#9ca3af; word-break: break-all;">
+              🔗 Link: <span style="color:#38bdf8;">{{ s.share_link }}</span>
+            </p>
+          </div>
+
+          <div class="share-status">
+            <span class="share-badge">
+              {{ "Public" if s.is_public else "Private" }}
+            </span>
+            <span class="share-views">Downloads: {{ s.access_count }}</span>
+            <span class="share-to">To: {{ s.shared_with }}</span>
+          </div>
+        </div>
+
+        <div class="share-actions">
+          <button class="btn-share-whatsapp"
+            onclick="shareWhatsApp('{{ s.filename }}', '{{ s.share_link }}')">
+            WhatsApp
+          </button>
+
+          <button class="btn-share-gmail"
+            onclick="shareGmail('{{ s.filename }}', '{{ s.share_link }}')">
+            Gmail
+          </button>
+
+          <a href="{{ url_for('revoke_share', share_id=s.id) }}"
+             class="btn-revoke"
+             onclick="return confirm('Revoke this share?');">
+            Revoke
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="shares-empty">❌ No shares found. Share a file from Dashboard → Recent Activity → Share.</p>
+  {% endif %}
+
+  <div class="shares-footer">
+    <a href="{{ url_for('dashboard') }}" class="btn-back-dash">⬅ Back to Dashboard</a>
+  </div>
+</div>
+
+<script>
+function shareWhatsApp(filename, link) {
+  const msg =
+`🚀 Advanced Encryption Tool 🔐✨
+
+✅ Secure File Shared Successfully!
+📄 File: ${filename}
+
+🌐 Secure Link (Open on any device):
+${link}
+
+🛡️ Security Tip:
+Do not forward this link 🚫
+(PIN will be shared separately 🔑)`;
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+}
+
+function shareGmail(filename, link) {
+  const subject = encodeURIComponent("🔐 Secure Encrypted File Shared - Advanced Encryption Tool");
+  const body = encodeURIComponent(
+    "Hi,\n\n" +
+    "✅ I shared an encrypted file with you.\n\n" +
+    "📄 File: " + filename + "\n\n" +
+    "🌐 Secure Link:\n" + link + "\n\n" +
+    "🛡️ Tip: If PIN is enabled, I will share it separately.\n\n" +
+    "Thanks!"
+  );
+
+  window.open("https://mail.google.com/mail/?view=cm&fs=1&to=&su=" + subject + "&body=" + body, "_blank");
+}
+</script>
+{% endblock %}

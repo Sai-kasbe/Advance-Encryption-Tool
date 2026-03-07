@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Share Success - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card" style="text-align: center;">
+    <div style="font-size: 100px; margin-bottom: 20px;">🎉</div>
+
+    <h2 class="auth-title" style="color: #8b5cf6;">File Shared Successfully!</h2>
+    <p class="auth-subtitle">Your encrypted file is now shareable</p>
+
+    <div style="margin: 30px 0; padding: 20px; background: rgba(139,92,246,0.1); border-radius: 10px; border-left: 4px solid #8b5cf6;">
+      <p style="color: var(--soft-white); margin-bottom: 10px;"><strong>File:</strong> {{ filename }}</p>
+      <p style="color: var(--soft-white); margin: 0;"><strong>Expires in:</strong> {{ expiry_days }} days</p>
+    </div>
+
+    <div style="margin: 30px 0;">
+      <label style="display: block; margin-bottom: 10px; color: var(--soft-white);">Secure Share Link:</label>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input type="text" id="shareLink" value="{{ share_link }}"
+          style="flex: 1; min-width: 220px; padding: 12px; background: rgba(139,92,246,0.1); border: 2px solid #8b5cf6; border-radius: 8px; color: var(--soft-white); font-family: monospace;"
+          readonly>
+
+        <button onclick="copyLink()" class="btn-submit" style="width: auto; padding: 12px 25px;">
+          📋 Copy
+        </button>
+      </div>
+    </div>
+
+    <!-- ✅ Share Actions -->
+    <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+      <button onclick="shareWhatsApp()" class="btn-submit"
+        style="width: auto; padding: 12px 22px; background: linear-gradient(135deg,#22c55e,#16a34a);">
+        WhatsApp
+      </button>
+
+      <button onclick="shareGmail()" class="btn-submit"
+        style="width: auto; padding: 12px 22px; background: linear-gradient(135deg,#f97316,#ef4444);">
+        Gmail
+      </button>
+    </div>
+
+    <div style="margin-top: 30px;">
+      <button onclick="window.location.href='{{ url_for('my_shares') }}'" class="btn-submit">
+         📊 View All Shares
+      </button>
+
+      <button onclick="window.location.href='{{ url_for('dashboard') }}'"
+        class="btn-submit" style="background: linear-gradient(135deg, #6366f1, #4f46e5); width: auto; padding: 12px 20px; margin-left: 10px;">
+        🏠 Dashboard
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyLink() {
+  const link = document.getElementById('shareLink').value;
+
+  navigator.clipboard.writeText(link).then(() => {
+    alert("✅ Link copied to clipboard!");
+  }).catch(() => {
+    alert("❌ Copy failed. Please copy manually.");
+  });
+}
+
+function shareWhatsApp() {
+  const link = document.getElementById("shareLink").value;
+
+  const msg =
+`🚀 Advanced Encryption Tool 🔐✨
+
+✅ Secure File Shared Successfully!
+📄 File: {{ filename }}
+
+🌐 Secure Link (Open on any device):
+${link}
+
+🛡️ Security Tip:
+Do not forward this link 🚫
+(PIN will be shared separately 🔑)`;
+
+  // ✅ best compatible WhatsApp URL
+  const waUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
+
+  // ✅ avoid popup blocker
+  window.location.href = waUrl;
+}
+
+function shareGmail() {
+  const link = document.getElementById('shareLink').value;
+  const subject = encodeURIComponent("Encrypted file shared - Advanced Encryption Tool");
+  const body = encodeURIComponent(
+    "Hi,\n\nI shared an encrypted file with you.\n\nSecure Link:\n" + link + "\n\nThanks."
+  );
+
+  window.open("https://mail.google.com/mail/?view=cm&fs=1&to=&su=" + subject + "&body=" + body, "_blank");
+}
+</script>
+{% endblock %}

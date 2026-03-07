@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Share File - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="auth-title">🔗 Share Encrypted File</h2>
+    <p class="auth-subtitle">File: <strong>{{ filename }}</strong></p>
+
+    <form action="{{ url_for('share_file', file_id=file_id) }}" method="POST" class="auth-form">
+
+      <div class="form-group">
+        <label class="form-label">Share Type</label>
+        <select name="share_type" id="shareType" class="form-input" required onchange="toggleEmailField()">
+          <option value="public">🌍 Public (Anyone with link)</option>
+          <option value="private">🔒 Private (Specific user only)</option>
+        </select>
+        <small class="form-help">Private links require login + correct email.</small>
+      </div>
+
+      <div class="form-group" id="emailField" style="display: none;">
+        <label class="form-label">Share with Email</label>
+        <input type="email" name="shared_with_email" class="form-input" placeholder="user@example.com">
+        <small class="form-help">Only this email can access the link.</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Link Expiry</label>
+        <select name="expiry_days" class="form-input">
+          <option value="1">1 Day</option>
+          <option value="7" selected>7 Days</option>
+          <option value="30">30 Days</option>
+          <option value="365">1 Year</option>
+        </select>
+      </div>
+
+      <!-- ✅ PIN Protection -->
+      <div class="form-group">
+        <label class="form-label">Optional PIN (Extra Security)</label>
+        <input type="password" name="pin" class="form-input" placeholder="Enter a PIN (optional)">
+        <small class="form-help">If set, receiver must enter this PIN before download.</small>
+      </div>
+
+      <!-- ✅ One-time download -->
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="one_time">
+          One-time download link
+        </label>
+        <small class="form-help">If enabled, link works only once.</small>
+      </div>
+
+      <!-- ✅ Max downloads -->
+      <div class="form-group">
+        <label class="form-label">Max Downloads (Optional)</label>
+        <select name="max_downloads" class="form-input">
+          <option value="0" selected>Unlimited</option>
+          <option value="1">1</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+        </select>
+        <small class="form-help">Stops downloads after limit is reached.</small>
+      </div>
+
+      <button type="submit" class="btn-submit">🔗 Generate Secure Share Link</button>
+    </form>
+
+    <p class="auth-footer">
+      <a href="{{ url_for('dashboard') }}" class="auth-link">← Back to Dashboard</a>
+    </p>
+  </div>
+</div>
+
+<script>
+function toggleEmailField() {
+  const shareType = document.getElementById('shareType').value;
+  const emailField = document.getElementById('emailField');
+  emailField.style.display = (shareType === 'private') ? 'block' : 'none';
+}
+</script>
+{% endblock %}

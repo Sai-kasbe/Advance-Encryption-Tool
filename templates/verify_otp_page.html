@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify OTP - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">Verify OTP</h2>
+        <p class="auth-subtitle">Enter the OTP sent to your email</p>
+
+        <div class="timer-container">
+            <svg class="timer-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" class="timer-circle-bg"></circle>
+                <circle cx="50" cy="50" r="45" class="timer-circle" id="timerCircle"></circle>
+            </svg>
+            <div class="timer-text">
+                <span id="timerDisplay">10:00</span>
+                <small>remaining</small>
+            </div>
+        </div>
+
+        <form action="{{ url_for('verify_otp_page') }}" method="POST" class="auth-form" id="otpForm">
+            <div class="form-group">
+                <label for="otp" class="form-label">OTP Code</label>
+                <div class="otp-input-container">
+                    <input type="text" id="otp1" name="otp1" class="otp-input" maxlength="1" required>
+                    <input type="text" id="otp2" name="otp2" class="otp-input" maxlength="1" required>
+                    <input type="text" id="otp3" name="otp3" class="otp-input" maxlength="1" required>
+                    <input type="text" id="otp4" name="otp4" class="otp-input" maxlength="1" required>
+                    <input type="text" id="otp5" name="otp5" class="otp-input" maxlength="1" required>
+                    <input type="text" id="otp6" name="otp6" class="otp-input" maxlength="1" required>
+                </div>
+                <input type="hidden" id="otp" name="otp">
+            </div>
+
+            <button type="submit" class="btn-submit" id="verifyBtn">VERIFY OTP</button>
+        </form>
+
+        <div class="resend-container" id="resendContainer" style="display: none;">
+            <p class="auth-footer">
+                Didn't receive OTP? 
+                <a href="{{ url_for('login') }}" class="auth-link" id="resendLink">Resend OTP</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+// OTP Timer (10 minutes = 600 seconds)
+let timeLeft = 600;
+const timerDisplay = document.getElementById('timerDisplay');
+const timerCircle = document.getElementById('timerCircle');
+const resendContainer = document.getElementById('resendContainer');
+const verifyBtn = document.getElementById('verifyBtn');
+const circumference = 2 * Math.PI * 45;
+
+timerCircle.style.strokeDasharray = circumference;
+timerCircle.style.strokeDashoffset = 0;
+
+const countdown = setInterval(() => {
+    timeLeft--;
+    
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    
+    const progress = (timeLeft / 600) * circumference;
+    timerCircle.style.strokeDashoffset = circumference - progress;
+    
+    if (timeLeft <= 0) {
+        clearInterval(countdown);
+        timerDisplay.textContent = 'EXPIRED';
+        timerDisplay.style.color = '#ef4444';
+        verifyBtn.disabled = true;
+        verifyBtn.style.opacity = '0.5';
+        verifyBtn.textContent = 'OTP EXPIRED';
+        resendContainer.style.display = 'block';
+    }
+}, 1000);
+
+// OTP Input Auto-focus
+const otpInputs = document.querySelectorAll('.otp-input');
+otpInputs.forEach((input, index) => {
+    input.addEventListener('input', function() {
+        if (this.value.length === 1) {
+            if (index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        }
+    });
+    
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value === '') {
+            if (index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        }
+    });
+    
+    // Only allow numbers
+    input.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+});
+
+// Combine OTP before submit
+document.getElementById('otpForm').addEventListener('submit', function(e) {
+    const otp = Array.from(otpInputs).map(input => input.value).join('');
+    document.getElementById('otp').value = otp;
+    
+    if (otp.length !== 6) {
+        e.preventDefault();
+        alert('Please enter all 6 digits');
+    }
+});
+
+// Auto-focus first input
+otpInputs[0].focus();
+</script>
+{% endblock %}

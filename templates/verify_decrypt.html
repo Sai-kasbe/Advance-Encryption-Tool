@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Decryption OTP - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 25px rgba(16,185,129,0.6));">🔓</div>
+            <h2 class="auth-title">Verify Decryption OTP</h2>
+            <p class="auth-subtitle">Enter the OTP sent to your registered email</p>
+        </div>
+
+        <!-- Timer Display -->
+        <div class="timer-container" style="text-align: center; margin-bottom: 30px;">
+            <svg class="timer-svg" viewBox="0 0 100 100" style="width: 120px; height: 120px;">
+                <circle cx="50" cy="50" r="45" style="fill: none; stroke: rgba(16,185,129,0.1); stroke-width: 8;"></circle>
+                <circle cx="50" cy="50" r="45" class="timer-circle" id="timerCircle" style="fill: none; stroke: #10b981; stroke-width: 8; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; stroke-dasharray: 282.6; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear;"></circle>
+            </svg>
+            <div class="timer-text" style="margin-top: 15px;">
+                <span id="timerDisplay" style="font-size: 32px; font-weight: 900; color: #10b981;">10:00</span>
+                <br>
+                <small style="color: var(--muted); font-weight: 600;">remaining</small>
+            </div>
+        </div>
+
+        <form action="{{ url_for('verify_decrypt_page') }}" method="POST" class="auth-form" id="otpForm">
+            <div class="form-group">
+                <label for="otp" class="form-label" style="text-align: center; display: block; margin-bottom: 15px;">📧 Enter 6-Digit OTP</label>
+                <div class="otp-input-container" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                    <input type="text" id="otp1" class="otp-input" maxlength="1" required style="width: 50px; height: 60px; text-align: center; font-size: 28px; font-weight: 900; border: 2px solid rgba(16,185,129,0.3); border-radius: 10px; background: rgba(16,185,129,0.05); color: var(--soft-white);">
+                    <input type="text" id="otp2" class="otp-input" maxlength="1" required style="width: 50px; height: 60px; text-align: center; font-size: 28px; font-weight: 900; border: 2px solid rgba(16,185,129,0.3); border-radius: 10px; background: rgba(16,185,129,0.05); color: var(--soft-white);">
+                    <input type="text" id="otp3" class="otp-input" maxlength="1" required style="width: 50px; height: 60px; text-align: center; font-size: 28px; font-weight: 900; border: 2px solid rgba(16,185,129,0.3); border-radius: 10px; background: rgba(16,185,129,0.05); color: var(--soft-white);">
+                    <input type="text" id="otp4" class="otp-input" maxlength="1" required style="width: 50px; height: 60px; text-align: center; font-size: 28px; font-weight: 900; border: 2px solid rgba(16,185,129,0.3); border-radius: 10px; background: rgba(16,185,129,0.05); color: var(--soft-white);">
+                    <input type="text" id="otp5" class="otp-input" maxlength="1" required style="width: 50px; height: 60px; text-align: center; font-size: 28px; font-weight: 900; border: 2px solid rgba(16,185,129,0.3); border-radius: 10px; background: rgba(16,185,129,0.05); color: var(--soft-white);">
+                    <input type="text" id="otp6" class="otp-input" maxlength="1" required style="width: 50px; height: 60px; text-align: center; font-size: 28px; font-weight: 900; border: 2px solid rgba(16,185,129,0.3); border-radius: 10px; background: rgba(16,185,129,0.05); color: var(--soft-white);">
+                </div>
+                <input type="hidden" id="otp" name="otp">
+            </div>
+
+            <button type="submit" class="btn-submit" id="verifyBtn" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 30px rgba(16,185,129,0.4);">
+                🔓 VERIFY & DECRYPT
+            </button>
+        </form>
+
+        <div class="resend-container" id="resendContainer" style="display: none; text-align: center; margin-top: 20px;">
+            <p class="auth-footer" style="color: #ef4444; font-weight: 700;">
+                ⚠️ OTP Expired! 
+                <a href="{{ url_for('dashboard') }}" class="auth-link">Go back to dashboard</a>
+            </p>
+        </div>
+
+        <div style="text-align: center; margin-top: 25px;">
+            <p class="auth-footer">
+                Changed your mind? 
+                <a href="{{ url_for('dashboard') }}" class="auth-link">Cancel</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+// OTP Timer (10 minutes = 600 seconds)
+let timeLeft = 600;
+const timerDisplay = document.getElementById('timerDisplay');
+const timerCircle = document.getElementById('timerCircle');
+const resendContainer = document.getElementById('resendContainer');
+const verifyBtn = document.getElementById('verifyBtn');
+const circumference = 2 * Math.PI * 45;
+
+timerCircle.style.strokeDasharray = circumference;
+timerCircle.style.strokeDashoffset = 0;
+
+const countdown = setInterval(() => {
+    timeLeft--;
+    
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    
+    const progress = (timeLeft / 600) * circumference;
+    timerCircle.style.strokeDashoffset = circumference - progress;
+    
+    // Change color as time runs out
+    if (timeLeft <= 60) {
+        timerCircle.style.stroke = '#ef4444'; // Red
+        timerDisplay.style.color = '#ef4444';
+    } else if (timeLeft <= 180) {
+        timerCircle.style.stroke = '#f59e0b'; // Orange
+        timerDisplay.style.color = '#f59e0b';
+    }
+    
+    if (timeLeft <= 0) {
+        clearInterval(countdown);
+        timerDisplay.textContent = 'EXPIRED';
+        timerDisplay.style.color = '#ef4444';
+        verifyBtn.disabled = true;
+        verifyBtn.style.opacity = '0.5';
+        verifyBtn.style.cursor = 'not-allowed';
+        verifyBtn.textContent = 'OTP EXPIRED ⏰';
+        resendContainer.style.display = 'block';
+    }
+}, 1000);
+
+// OTP Input Auto-focus and validation
+const otpInputs = document.querySelectorAll('.otp-input');
+
+otpInputs.forEach((input, index) => {
+    // Auto-focus next input
+    input.addEventListener('input', function() {
+        if (this.value.length === 1) {
+            if (index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
+        }
+    });
+    
+    // Handle backspace
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value === '') {
+            if (index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        }
+    });
+    
+    // Only allow numbers
+    input.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Add glow effect on focus
+    input.addEventListener('focus', function() {
+        this.style.borderColor = '#10b981';
+        this.style.boxShadow = '0 0 20px rgba(16,185,129,0.4)';
+    });
+
+    input.addEventListener('blur', function() {
+        this.style.borderColor = 'rgba(16,185,129,0.3)';
+        this.style.boxShadow = 'none';
+    });
+});
+
+// Combine OTP before submit
+document.getElementById('otpForm').addEventListener('submit', function(e) {
+    const otp = Array.from(otpInputs).map(input => input.value).join('');
+    document.getElementById('otp').value = otp;
+    
+    if (otp.length !== 6) {
+        e.preventDefault();
+        alert('❌ Please enter all 6 digits');
+        otpInputs[0].focus();
+    }
+});
+
+// Auto-focus first input on page load
+window.addEventListener('load', () => {
+    otpInputs[0].focus();
+});
+</script>
+<script>
+// Check if download was successful and redirect
+function checkDownloadAndRedirect() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        if (cookie.trim().startsWith('download_success=')) {
+            // Download started, wait 2 seconds then redirect
+            setTimeout(() => {
+                window.location.href = "{{ url_for('dashboard') }}";
+            }, 2000);
+            
+            // Delete cookie
+            document.cookie = 'download_success=; max-age=0';
+            break;
+        }
+    }
+}
+
+// Check on page load
+window.addEventListener('load', checkDownloadAndRedirect);
+</script>
+
+{% endblock %}
+

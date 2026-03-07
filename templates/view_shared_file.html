@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Shared File - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card" style="max-width: 620px;">
+
+    <h2 class="auth-title">📤 Shared Encrypted File</h2>
+    <p class="auth-subtitle">
+      Shared by <strong style="color: var(--accent-2);">{{ owner_name }}</strong>
+    </p>
+
+    <div style="margin: 18px 0; padding: 16px; border-radius: 12px;
+                background: rgba(139,92,246,0.08);
+                border: 1px solid rgba(139,92,246,0.35);">
+      <p style="margin-bottom: 8px; color: var(--soft-white); font-weight: 800;">
+        📄 File: <span style="color: var(--accent-1);">{{ filename }}</span>
+      </p>
+
+      <p style="margin: 0; color: var(--muted); font-size: 14px; font-weight: 600;">
+        Category: <span style="color: var(--accent-3); text-transform: capitalize;">{{ category }}</span>
+      </p>
+    </div>
+
+    <!-- ✅ Share Link -->
+    <div style="margin-top: 18px;">
+      <label class="form-label">Secure Link</label>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input
+          type="text"
+          id="shareLink"
+          class="form-input"
+          value="{{ url_for('access_shared_file', token=token, _external=True) }}"
+          readonly
+          style="flex: 1; min-width: 240px; font-family: monospace;"
+        />
+
+        <button
+          type="button"
+          onclick="copyShareLink()"
+          class="btn-submit"
+          style="width: auto; padding: 14px 20px; text-transform: none;">
+          📋 Copy
+        </button>
+      </div>
+
+      <small class="form-help">
+        This link can be opened on any device. Keep it private for safety.
+      </small>
+    </div>
+
+    <!-- ✅ Optional PIN Section (Frontend Ready) -->
+    <div style="margin-top: 18px;">
+      <label class="form-label">PIN (Only if required)</label>
+      <input
+        type="password"
+        id="pinInput"
+        class="form-input"
+        placeholder="Enter PIN if the share is protected"
+      />
+      <small class="form-help">
+        If the owner enabled PIN protection, you must enter it to download the file.
+      </small>
+    </div>
+
+    <!-- ✅ Action Buttons -->
+    <div style="margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap;">
+      <a
+        href="{{ url_for('download_shared_file', token=token) }}"
+        class="btn-submit"
+        style="flex: 1; text-align: center; text-decoration: none;
+               background: linear-gradient(135deg,#10b981,#059669);">
+        ⬇️ Download Encrypted File
+      </a>
+
+      <button
+        type="button"
+        class="btn-submit"
+        onclick="shareWhatsApp()"
+        style="flex: 1; background: linear-gradient(135deg,#22c55e,#16a34a);">
+        WhatsApp
+      </button>
+
+      <button
+        type="button"
+        class="btn-submit"
+        onclick="shareGmail()"
+        style="flex: 1; background: linear-gradient(135deg,#f97316,#ef4444);">
+        Gmail
+      </button>
+    </div>
+
+    <p class="auth-footer" style="margin-top: 22px;">
+      ⚠️ Security tip: Don’t share the PIN in the same message as the link.
+    </p>
+
+    <p class="auth-footer">
+      <a href="{{ url_for('login') }}" class="auth-link">← Back to Login</a>
+    </p>
+
+  </div>
+</div>
+
+<script>
+function copyShareLink() {
+  const link = document.getElementById("shareLink").value;
+
+  navigator.clipboard.writeText(link).then(() => {
+    alert("✅ Share link copied!");
+  }).catch(() => {
+    alert("❌ Copy failed. Please copy manually.");
+  });
+}
+
+function shareWhatsApp() {
+  const filename = "{{ filename }}";
+  const link = document.getElementById("shareLink").value;
+
+  const msg =
+    "🔐 Encrypted file shared from Advanced Encryption Tool\n\n" +
+    "📄 File: " + filename + "\n\n" +
+    "✅ Secure Link:\n" + link;
+
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+}
+
+function shareGmail() {
+  const filename = "{{ filename }}";
+  const link = document.getElementById("shareLink").value;
+
+  const subject = encodeURIComponent("Encrypted file shared - Advanced Encryption Tool");
+  const body = encodeURIComponent(
+    "Hi,\n\n" +
+    "An encrypted file has been shared with you.\n\n" +
+    "File: " + filename + "\n\n" +
+    "Secure Link:\n" + link + "\n\n" +
+    "Thanks."
+  );
+
+  window.open(
+    "https://mail.google.com/mail/?view=cm&fs=1&to=&su=" + subject + "&body=" + body,
+    "_blank"
+  );
+}
+</script>
+{% endblock %}

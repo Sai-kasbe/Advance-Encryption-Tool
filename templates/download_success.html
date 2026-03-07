@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Download Ready - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card" style="text-align: center;">
+        <div style="font-size: 100px; margin-bottom: 20px; animation: bounce 1s ease-in-out;">
+            ✅
+        </div>
+        
+        <h2 class="auth-title" style="color: #10b981;">Decryption Successful!</h2>
+        <p class="auth-subtitle">Your file has been decrypted and is ready to download</p>
+
+        <div style="margin: 40px 0;">
+            <a href="{{ url_for('download_decrypted_file', file_id=file_id) }}" 
+               class="btn-submit" 
+               id="downloadBtn"
+               style="display: inline-block; text-decoration: none; padding: 18px 40px; font-size: 18px; background: linear-gradient(135deg, #10b981, #059669);">
+                📥 DOWNLOAD FILE
+            </a>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <button onclick="window.location.href='{{ url_for('dashboard') }}'" 
+                    class="btn-submit" 
+                    style="background: linear-gradient(135deg, #6366f1, #4f46e5); padding: 14px 30px;">
+                🏠 GO TO DASHBOARD
+            </button>
+        </div>
+
+        <div style="margin-top: 20px; padding: 20px; background: rgba(16,185,129,0.1); border-radius: 10px; border-left: 4px solid #10b981;">
+            <p style="color: var(--soft-white); margin: 0;">
+                <strong>File:</strong> {{ filename }}<br>
+                <strong>Status:</strong> <span style="color: #10b981;">Decrypted ✓</span>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+#downloadBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 40px rgba(16,185,129,0.6);
+}
+</style>
+
+<script>
+// Track if download button was clicked
+document.getElementById('downloadBtn').addEventListener('click', function() {
+    // Change button text after download starts
+    setTimeout(() => {
+        this.textContent = '✅ Downloaded! Click Dashboard button below';
+        this.style.opacity = '0.7';
+        this.style.cursor = 'default';
+        this.onclick = function(e) { e.preventDefault(); };
+    }, 500);
+});
+</script>
+
+{% endblock %}

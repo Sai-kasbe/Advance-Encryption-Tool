@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Advanced Encryption Tool{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Please log in to continue</p>
+
+        <form action="{{ url_for('login') }}" method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-input" placeholder="Enter your username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="password-input-wrapper">
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+                    <button type="button" class="show-password-toggle" onclick="togglePassword('password')">
+                        <span class="eye-icon">👁️</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-links">
+                <a href="{{ url_for('forgot_password') }}" class="form-link">Forgot Password?</a>
+                <a href="{{ url_for('forgot_username') }}" class="form-link">Forgot Username?</a>
+            </div>
+
+            <button type="submit" class="btn-submit">LOG IN</button>
+        </form>
+
+        <p class="auth-footer">
+            Don't have an account? 
+            <a href="{{ url_for('signup') }}" class="auth-link">Sign Up</a>
+        </p>
+    </div>
+</div>
+
+<script>
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = event.currentTarget.querySelector('.eye-icon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+    }
+}
+</script>
+{% endblock %}

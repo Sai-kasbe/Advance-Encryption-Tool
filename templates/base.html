@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Advanced Encryption Tool{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Animated background canvas -->
+    <canvas id="ae-bg-canvas" class="ae-bg-canvas"></canvas>
+    
+    <!-- ANIMATED HEADER LOGO - TOP CENTER -->
+    <div class="ae-header-logo">
+        <div class="logo-container">
+            <!-- Logo Image from static/img/logo.png -->
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo-image">
+            
+            <div class="logo-text-wrapper">
+                <h1 class="logo-title">
+                    <span class="logo-word logo-word-left">Advanced</span>
+                    <span class="logo-word logo-word-right">Encryption</span>
+                    <span class="logo-word logo-word-left">Tool</span>
+                </h1>
+                <div class="logo-tagline">Stronger. Smarter. Secure.🛡️</div>
+            </div>
+        </div>
+        <div class="logo-binary-stream">
+            <span class="binary-digit">1</span>
+            <span class="binary-digit">0</span>
+            <span class="binary-digit">1</span>
+            <span class="binary-digit">1</span>
+            <span class="binary-digit">0</span>
+            <span class="binary-digit">1</span>
+            <span class="binary-digit">0</span>
+            <span class="binary-digit">1</span>
+        </div>
+    </div>
+    
+    <!-- Flash messages with auto-dismiss -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flashContainer" style="position: fixed; top: 100px; right: 20px; z-index: 9999; max-width: 400px;">
+                {% for category, message in messages %}
+                    <div class="flash-message" style="background: linear-gradient(135deg, #00f5ff, #9f5cff); color: #02111a; padding: 18px 25px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 10px 40px rgba(0,245,255,0.4); font-weight: 700; font-size: 15px; animation: slideInRight 0.4s ease-out; border: 2px solid rgba(255,255,255,0.3);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 24px;">
+                                {% if 'success' in category %}✅
+                                {% elif 'error' in category %}❌
+                                {% else %}ℹ️{% endif %}
+                            </span>
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Main content -->
+    {% block content %}{% endblock %}
+    
+    <!-- Background animation script -->
+    <script src="{{ url_for('static', filename='js/bg-bits.js') }}"></script>
+    
+    <!-- Auto-dismiss flash messages after 2 seconds -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach((msg, index) => {
+                setTimeout(() => {
+                    msg.style.animation = 'slideOutRight 0.4s ease-out forwards';
+                    setTimeout(() => msg.remove(), 400);
+                }, 2000 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>

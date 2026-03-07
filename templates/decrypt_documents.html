@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Decrypt Documents - Advanced Encryption Tool{% endblock %}
+{% block content %}
+<div class="decrypt-container" style="max-width: 800px; margin: 40px auto; padding: 20px; position: relative; z-index: 5;">
+    <div style="margin-bottom: 30px;">
+        <a href="{{ url_for('dashboard') }}" style="text-decoration: none; color: #f5576c; font-weight: 700; font-size: 16px;">← Back to Dashboard</a>
+        <h1 style="font-size: 36px; color: #f5576c; margin-top: 15px; font-weight: 900; text-shadow: 0 0 30px rgba(245,87,108,0.3);">📑 Decrypt Documents</h1>
+        <p style="color: var(--muted); font-size: 16px; font-weight: 600;">Decrypt your encrypted document files</p>
+    </div>
+
+    <div style="background: rgba(20,25,45,0.85); padding: 40px; border-radius: 20px; border: 2px solid rgba(245,87,108,0.15); backdrop-filter: blur(12px);">
+        <form action="{{ url_for('decrypt_documents') }}" method="POST" enctype="multipart/form-data">
+            <!-- File Upload Area -->
+            <div id="uploadArea" style="border: 3px dashed rgba(245,87,108,0.3); padding: 60px; text-align: center; border-radius: 15px; margin-bottom: 30px; cursor: pointer; background: rgba(245,87,108,0.02); transition: all 0.3s;" onclick="document.getElementById('fileInput').click()">
+                <div style="font-size: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 25px rgba(245,87,108,0.4));">🔓</div>
+                <h3 style="color: #f5576c; margin-bottom: 10px; font-weight: 800; font-size: 22px;">Select Encrypted Document (.enc)</h3>
+                <p style="color: var(--muted); font-weight: 600;">Choose your encrypted file</p>
+                <input type="file" id="fileInput" name="file" accept=".enc" required hidden>
+            </div>
+
+            <!-- File Preview -->
+            <div id="filePreview" style="display: none; background: rgba(245,87,108,0.05); padding: 25px; border-radius: 15px; margin-bottom: 30px; border: 2px solid rgba(245,87,108,0.3);">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f5576c, #ff8fc8); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; border: 3px solid rgba(245,87,108,0.4);">🔒</div>
+                    <div style="flex: 1;">
+                        <p id="fileName" style="color: #f5576c; font-weight: 800; font-size: 18px; margin-bottom: 5px;"></p>
+                        <p id="fileSize" style="color: var(--muted); font-weight: 600; font-size: 14px;"></p>
+                    </div>
+                    <button type="button" onclick="removeFile()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 24px; cursor: pointer; font-weight: 900; box-shadow: 0 6px 20px rgba(239,68,68,0.4);">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 700; color: #f5576c; font-size: 15px;">🔑 Decryption Password</label>
+                <input type="password" name="password" style="width: 100%; padding: 14px; border: 2px solid rgba(245,87,108,0.2); border-radius: 10px; font-size: 16px; background: rgba(245,87,108,0.03); color: var(--soft-white); font-weight: 600;" placeholder="Enter password" required>
+            </div>
+            
+            <button type="submit" style="width: 100%; padding: 18px; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; cursor: pointer; letter-spacing: 1px;">
+                🔓 DECRYPT DOCUMENT
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const filePreview = document.getElementById('filePreview');
+
+fileInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+        const file = this.files[0];
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = formatFileSize(file.size);
+        uploadArea.style.display = 'none';
+        filePreview.style.display = 'block';
+    }
+});
+
+function removeFile() {
+    fileInput.value = '';
+    uploadArea.style.display = 'block';
+    filePreview.style.display = 'none';
+}
+
+function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
+    else return (bytes / 1048576).toFixed(2) + ' MB';
+}
+</script>
+{% endblock %}
