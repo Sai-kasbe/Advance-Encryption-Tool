@@ -62,9 +62,9 @@ app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USE_SSL"] = False
 
-app.config["MAIL_USERNAME"] = "advancedencryptiontool16@gmail.com"
-app.config["MAIL_PASSWORD"] = "hztmeqshsauaunlh"
-app.config["MAIL_DEFAULT_SENDER"] = "advancedencryptiontool16@gmail.com"
+app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.environ.get("MAIL_PASSWORD")
+app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_USERNAME")
 
 EMAIL_USER = app.config["MAIL_USERNAME"]
 EMAIL_PASS = app.config["MAIL_PASSWORD"]
@@ -1525,5 +1525,6 @@ if __name__ == "__main__":
     print("=" * 80)
 
     app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
+
 
 
