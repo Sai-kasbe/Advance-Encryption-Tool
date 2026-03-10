@@ -39,3 +39,4 @@ conn.close()
 
 print("✅ Database updated successfully!")
 print("✅ Mobile column removed from users table")
+
