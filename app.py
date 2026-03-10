@@ -265,6 +265,33 @@ def login():
 
     return render_template("login.html")
 
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+
+    if request.method == "POST":
+
+        email = request.form.get("email")
+
+        if not email:
+            flash("Email is required")
+            return render_template("forgot_password.html")
+
+        conn = get_db()
+        c = conn.cursor()
+
+        c.execute("SELECT id FROM users WHERE email=?", (email,))
+        user = c.fetchone()
+
+        conn.close()
+
+        if not user:
+            flash("Email not found")
+            return render_template("forgot_password.html")
+
+        flash("Password reset link sent")
+        return redirect(url_for("login"))
+
+    return render_template("forgot_password.html")
 
 @app.route("/dashboard")
 def dashboard():
@@ -296,3 +323,4 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
