@@ -39,9 +39,11 @@ if os.environ.get("FLASK_ENV") == "production":
     app.config["SESSION_COOKIE_SECURE"] = True
 
 # Folders
-UPLOAD_FOLDER = "encrypted_files"
-DECRYPTED_FOLDER = "decrypted_files"
-DB_NAME = "advanced_encryption.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "encrypted_files")
+DECRYPTED_FOLDER = os.path.join(BASE_DIR, "decrypted_files")
+DB_NAME = os.path.join(BASE_DIR, "advanced_encryption.db")
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(DECRYPTED_FOLDER, exist_ok=True)
@@ -1526,6 +1528,7 @@ if __name__ == "__main__":
 
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
