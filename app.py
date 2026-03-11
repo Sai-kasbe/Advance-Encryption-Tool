@@ -401,8 +401,17 @@ def logout():
 @app.errorhandler(500)
 def handle_error(e):
     return redirect(url_for("login"))
+#------------------------------------------------------------
+# MY SHARE
+#------------------------------------------------------------
 
+@app.route("/my-shares")
+def my_shares():
 
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("my_shares.html")
 # -------------------------------------------------
 # START SERVER
 # -------------------------------------------------
@@ -418,6 +427,7 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
 
 
 
