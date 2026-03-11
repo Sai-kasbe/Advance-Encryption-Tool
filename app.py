@@ -253,6 +253,121 @@ def dashboard():
         username=session["username"]
     )
 
+# ----------------------------
+# ENCRYPT ROUTES
+# ----------------------------
+
+@app.route("/encrypt-images")
+def encrypt_images():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("encrypt_images.html")
+
+
+@app.route("/encrypt-documents")
+def encrypt_documents():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("encrypt_documents.html")
+
+
+@app.route("/encrypt-media")
+def encrypt_media():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("encrypt_media.html")
+
+
+# ----------------------------
+# DECRYPT ROUTES
+# ----------------------------
+
+@app.route("/decrypt-images")
+def decrypt_images():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("decrypt_images.html")
+
+
+@app.route("/decrypt-documents")
+def decrypt_documents():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("decrypt_documents.html")
+
+
+@app.route("/decrypt-media")
+def decrypt_media():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("decrypt_media.html")
+
+
+# ----------------------------
+# DOWNLOAD
+# ----------------------------
+
+@app.route("/download-decrypted")
+def download_decrypted():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("download_decrypted.html")
+
+
+@app.route("/download-success")
+def download_success():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("download_success.html")
+
+
+# ----------------------------
+# SHARING
+# ----------------------------
+
+@app.route("/share-file")
+def share_file():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("share_file.html")
+
+
+@app.route("/share-success")
+def share_success():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("share_success.html")
+
+
+@app.route("/my-shares")
+def my_shares():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    return render_template("my_shares.html")
+
+
+@app.route("/view-shared-file")
+def view_shared_file():
+    return render_template("view_shared_file.html")
+
+
+# ----------------------------
+# VERIFY PAGES
+# ----------------------------
+
+@app.route("/verify-otp")
+def verify_otp_page():
+    return render_template("verify_otp_page.html")
+
+
+@app.route("/verify-decrypt")
+def verify_decrypt_page():
+    return render_template("verify_decrypt_page.html")
+
+
+@app.route("/verify-forgot-password")
+def verify_forgot_password_otp():
+    return render_template("verify_forgot_password_otp.html")
 
 # -------------------------------------------------
 # SEND OTP
@@ -452,6 +567,7 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
 
 
 
