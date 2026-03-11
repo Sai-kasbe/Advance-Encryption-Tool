@@ -58,40 +58,43 @@ def init_db():
 # EMAIL FUNCTION
 # -------------------------------------------------
 
+import requests
+import os
+
 def send_email(to_email, subject, html):
 
-    if not MAIL_USERNAME or not MAIL_PASSWORD:
-        print("Email not configured")
-        return False
+    api_key = os.environ.get("RESEND_API_KEY")
+
+    url = "https://api.resend.com/emails"
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "from": "Encryption Tool <onboarding@resend.dev>",
+        "to": [to_email],
+        "subject": subject,
+        "html": html
+    }
 
     try:
 
-        msg = MIMEMultipart()
-        msg["From"] = MAIL_USERNAME
-        msg["To"] = to_email
-        msg["Subject"] = subject
+        response = requests.post(url, headers=headers, json=data)
 
-        msg.attach(MIMEText(html, "html"))
+        if response.status_code == 200:
+            print("EMAIL SENT")
+            return True
 
-        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=10)
-        server.starttls()
-
-        server.login(MAIL_USERNAME, MAIL_PASSWORD)
-
-        server.sendmail(MAIL_USERNAME, to_email, msg.as_string())
-
-        server.quit()
-
-        print("EMAIL SENT")
-
-        return True
+        else:
+            print("EMAIL ERROR:", response.text)
+            return False
 
     except Exception as e:
 
         print("EMAIL ERROR:", e)
-
         return False
-
 
 # -------------------------------------------------
 # HOME
@@ -361,5 +364,6 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
 
 
