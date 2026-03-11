@@ -62,18 +62,18 @@ def send_email(to_email, subject, html):
 
     if not MAIL_USERNAME or not MAIL_PASSWORD:
         print("Email not configured")
-        return
-
-    msg = MIMEMultipart()
-    msg["From"] = MAIL_USERNAME
-    msg["To"] = to_email
-    msg["Subject"] = subject
-
-    msg.attach(MIMEText(html, "html"))
+        return False
 
     try:
 
-        server = smtplib.SMTP("smtp.gmail.com", 587)
+        msg = MIMEMultipart()
+        msg["From"] = MAIL_USERNAME
+        msg["To"] = to_email
+        msg["Subject"] = subject
+
+        msg.attach(MIMEText(html, "html"))
+
+        server = smtplib.SMTP("smtp.gmail.com", 587, timeout=10)
         server.starttls()
 
         server.login(MAIL_USERNAME, MAIL_PASSWORD)
@@ -82,8 +82,15 @@ def send_email(to_email, subject, html):
 
         server.quit()
 
+        print("EMAIL SENT")
+
+        return True
+
     except Exception as e:
-        print("Email error:", e)
+
+        print("EMAIL ERROR:", e)
+
+        return False
 
 
 # -------------------------------------------------
@@ -202,7 +209,7 @@ def send_email_otp():
         data = request.get_json()
 
         if not data:
-            return jsonify({"sent": False, "error": "No JSON"}), 400
+            return jsonify({"sent": False, "error": "No JSON data"}), 400
 
         email = data.get("email")
 
@@ -223,9 +230,10 @@ def send_email_otp():
         <p>This OTP expires in 2 minutes</p>
         """
 
-        send_email(email, subject, html)
+        email_sent = send_email(email, subject, html)
 
-        print("OTP SENT:", otp)
+        if not email_sent:
+            return jsonify({"sent": False, "error": "Email failed"}), 500
 
         return jsonify({"sent": True})
 
@@ -237,7 +245,6 @@ def send_email_otp():
             "sent": False,
             "error": str(e)
         }), 500
-
 
 # -------------------------------------------------
 # VERIFY OTP
@@ -354,4 +361,5 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
 
