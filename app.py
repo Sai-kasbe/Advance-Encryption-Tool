@@ -83,11 +83,13 @@ def send_email(to_email, subject, html):
 
         response = requests.post(url, headers=headers, json=data)
 
-        if response.status_code == 200:
+        if response.status_code in [200, 201]:
+
             print("EMAIL SENT")
             return True
 
         else:
+
             print("EMAIL ERROR:", response.text)
             return False
 
@@ -364,6 +366,7 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
 
 
 
