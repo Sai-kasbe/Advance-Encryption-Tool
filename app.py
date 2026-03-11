@@ -412,6 +412,31 @@ def my_shares():
         return redirect(url_for("login"))
 
     return render_template("my_shares.html")
+@app.route("/share-file")
+def share_file():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("share_file.html")
+
+
+@app.route("/share-success")
+def share_success():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("share_success.html")
+
+
+@app.route("/view-shared-file")
+def view_shared_file():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("view_shared_file.html")
 # -------------------------------------------------
 # START SERVER
 # -------------------------------------------------
@@ -427,6 +452,7 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
 
 
 
