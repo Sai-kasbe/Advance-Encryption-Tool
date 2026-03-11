@@ -197,27 +197,46 @@ def dashboard():
 @app.route("/api/send_email_otp", methods=["POST"])
 def send_email_otp():
 
-    data = request.get_json()
+    try:
 
-    email = data.get("email")
+        data = request.get_json()
 
-    otp = str(secrets.randbelow(999999)).zfill(6)
+        if not data:
+            return jsonify({"sent": False, "error": "No JSON"}), 400
 
-    session["signup_email"] = email
-    session["signup_otp"] = otp
-    session["signup_otp_time"] = time.time()
+        email = data.get("email")
 
-    subject = "Your OTP Code"
+        if not email:
+            return jsonify({"sent": False, "error": "Email missing"}), 400
 
-    html = f"""
-    <h2>Your OTP Code</h2>
-    <h1>{otp}</h1>
-    <p>This OTP expires in 2 minutes</p>
-    """
+        otp = str(secrets.randbelow(999999)).zfill(6)
 
-    send_email(email, subject, html)
+        session["signup_email"] = email
+        session["signup_otp"] = otp
+        session["signup_otp_time"] = time.time()
 
-    return jsonify({"sent": True})
+        subject = "Your OTP Code"
+
+        html = f"""
+        <h2>Your OTP Code</h2>
+        <h1>{otp}</h1>
+        <p>This OTP expires in 2 minutes</p>
+        """
+
+        send_email(email, subject, html)
+
+        print("OTP SENT:", otp)
+
+        return jsonify({"sent": True})
+
+    except Exception as e:
+
+        print("OTP ERROR:", e)
+
+        return jsonify({
+            "sent": False,
+            "error": str(e)
+        }), 500
 
 
 # -------------------------------------------------
@@ -335,3 +354,4 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
