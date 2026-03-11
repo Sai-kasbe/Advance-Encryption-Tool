@@ -190,6 +190,58 @@ def signup():
 # DASHBOARD
 # -------------------------------------------------
 
+@app.route("/encrypt-images")
+def encrypt_images():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("encrypt_images.html")
+
+
+@app.route("/encrypt-documents")
+def encrypt_documents():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("encrypt_documents.html")
+
+
+@app.route("/encrypt-media")
+def encrypt_media():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("encrypt_media.html")
+
+
+@app.route("/decrypt-images")
+def decrypt_images():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("decrypt_images.html")
+
+
+@app.route("/decrypt-documents")
+def decrypt_documents():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("decrypt_documents.html")
+
+
+@app.route("/decrypt-media")
+def decrypt_media():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template("decrypt_media.html")
 @app.route("/dashboard")
 def dashboard():
 
@@ -366,6 +418,7 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
 
 
 
