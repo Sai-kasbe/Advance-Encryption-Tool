@@ -1,20 +1,10 @@
 import os
 import sqlite3
 import secrets
-import smtplib
 import time
 from datetime import datetime
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
-from flask import (
-    Flask, render_template, request,
-    redirect, url_for, session, flash, jsonify
-)
-
-# -------------------------------------------------
-# APP CONFIG
-# -------------------------------------------------
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+import requests
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
@@ -22,12 +12,10 @@ app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(16))
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "advanced_encryption.db")
 
-MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
-MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
 
-# -------------------------------------------------
+# -----------------------------
 # DATABASE
-# -------------------------------------------------
+# -----------------------------
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -36,7 +24,6 @@ def get_db():
 
 
 def init_db():
-
     conn = get_db()
     c = conn.cursor()
 
@@ -54,12 +41,9 @@ def init_db():
     conn.close()
 
 
-# -------------------------------------------------
-# EMAIL FUNCTION
-# -------------------------------------------------
-
-import requests
-import os
+# -----------------------------
+# EMAIL (RESEND API)
+# -----------------------------
 
 def send_email(to_email, subject, html):
 
@@ -80,36 +64,32 @@ def send_email(to_email, subject, html):
     }
 
     try:
+        r = requests.post(url, headers=headers, json=data)
 
-        response = requests.post(url, headers=headers, json=data)
-
-        if response.status_code in [200, 201]:
-
+        if r.status_code in [200, 201]:
             print("EMAIL SENT")
             return True
 
-        else:
-
-            print("EMAIL ERROR:", response.text)
-            return False
+        print("EMAIL ERROR:", r.text)
+        return False
 
     except Exception as e:
-
         print("EMAIL ERROR:", e)
         return False
 
-# -------------------------------------------------
+
+# -----------------------------
 # HOME
-# -------------------------------------------------
+# -----------------------------
 
 @app.route("/")
 def home():
     return redirect(url_for("login"))
 
 
-# -------------------------------------------------
+# -----------------------------
 # LOGIN
-# -------------------------------------------------
+# -----------------------------
 
 @app.route("/login", methods=["GET","POST"])
 def login():
@@ -131,10 +111,8 @@ def login():
         conn.close()
 
         if user:
-
             session["user_id"] = user["id"]
             session["username"] = user["username"]
-
             return redirect(url_for("dashboard"))
 
         flash("Invalid username or password")
@@ -142,9 +120,9 @@ def login():
     return render_template("login.html")
 
 
-# -------------------------------------------------
+# -----------------------------
 # SIGNUP
-# -------------------------------------------------
+# -----------------------------
 
 @app.route("/signup", methods=["GET","POST"])
 def signup():
@@ -186,76 +164,22 @@ def signup():
     return render_template("signup.html")
 
 
-# -------------------------------------------------
+# -----------------------------
 # DASHBOARD
-# -------------------------------------------------
+# -----------------------------
 
-@app.route("/encrypt-images")
-def encrypt_images():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("encrypt_images.html")
-
-
-@app.route("/encrypt-documents")
-def encrypt_documents():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("encrypt_documents.html")
-
-
-@app.route("/encrypt-media")
-def encrypt_media():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("encrypt_media.html")
-
-
-@app.route("/decrypt-images")
-def decrypt_images():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("decrypt_images.html")
-
-
-@app.route("/decrypt-documents")
-def decrypt_documents():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("decrypt_documents.html")
-
-
-@app.route("/decrypt-media")
-def decrypt_media():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("decrypt_media.html")
 @app.route("/dashboard")
 def dashboard():
 
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    return render_template(
-        "dashboard.html",
-        username=session["username"]
-    )
+    return render_template("dashboard.html", username=session["username"])
 
-# ----------------------------
-# ENCRYPT ROUTES
-# ----------------------------
+
+# -----------------------------
+# ENCRYPT
+# -----------------------------
 
 @app.route("/encrypt-images")
 def encrypt_images():
@@ -278,9 +202,9 @@ def encrypt_media():
     return render_template("encrypt_media.html")
 
 
-# ----------------------------
-# DECRYPT ROUTES
-# ----------------------------
+# -----------------------------
+# DECRYPT
+# -----------------------------
 
 @app.route("/decrypt-images")
 def decrypt_images():
@@ -303,9 +227,9 @@ def decrypt_media():
     return render_template("decrypt_media.html")
 
 
-# ----------------------------
+# -----------------------------
 # DOWNLOAD
-# ----------------------------
+# -----------------------------
 
 @app.route("/download-decrypted")
 def download_decrypted():
@@ -321,9 +245,9 @@ def download_success():
     return render_template("download_success.html")
 
 
-# ----------------------------
-# SHARING
-# ----------------------------
+# -----------------------------
+# SHARE
+# -----------------------------
 
 @app.route("/share-file")
 def share_file():
@@ -351,76 +275,32 @@ def view_shared_file():
     return render_template("view_shared_file.html")
 
 
-# ----------------------------
-# VERIFY PAGES
-# ----------------------------
-
-@app.route("/verify-otp")
-def verify_otp_page():
-    return render_template("verify_otp_page.html")
-
-
-@app.route("/verify-decrypt")
-def verify_decrypt_page():
-    return render_template("verify_decrypt_page.html")
-
-
-@app.route("/verify-forgot-password")
-def verify_forgot_password_otp():
-    return render_template("verify_forgot_password_otp.html")
-
-# -------------------------------------------------
-# SEND OTP
-# -------------------------------------------------
+# -----------------------------
+# OTP
+# -----------------------------
 
 @app.route("/api/send_email_otp", methods=["POST"])
 def send_email_otp():
 
-    try:
+    data = request.get_json()
 
-        data = request.get_json()
+    email = data.get("email")
 
-        if not data:
-            return jsonify({"sent": False, "error": "No JSON data"}), 400
+    otp = str(secrets.randbelow(999999)).zfill(6)
 
-        email = data.get("email")
+    session["signup_email"] = email
+    session["signup_otp"] = otp
+    session["signup_otp_time"] = time.time()
 
-        if not email:
-            return jsonify({"sent": False, "error": "Email missing"}), 400
+    html = f"<h2>Your OTP</h2><h1>{otp}</h1>"
 
-        otp = str(secrets.randbelow(999999)).zfill(6)
+    email_sent = send_email(email,"Your OTP Code",html)
 
-        session["signup_email"] = email
-        session["signup_otp"] = otp
-        session["signup_otp_time"] = time.time()
+    if not email_sent:
+        return jsonify({"sent":False})
 
-        subject = "Your OTP Code"
+    return jsonify({"sent":True})
 
-        html = f"""
-        <h2>Your OTP Code</h2>
-        <h1>{otp}</h1>
-        <p>This OTP expires in 2 minutes</p>
-        """
-
-        email_sent = send_email(email, subject, html)
-
-        if not email_sent:
-            return jsonify({"sent": False, "error": "Email failed"}), 500
-
-        return jsonify({"sent": True})
-
-    except Exception as e:
-
-        print("OTP ERROR:", e)
-
-        return jsonify({
-            "sent": False,
-            "error": str(e)
-        }), 500
-
-# -------------------------------------------------
-# VERIFY OTP
-# -------------------------------------------------
 
 @app.route("/api/verify_email_otp", methods=["POST"])
 def verify_email_otp():
@@ -437,69 +317,12 @@ def verify_email_otp():
     if valid:
         session["email_verified"] = True
 
-    return jsonify({"valid": valid})
+    return jsonify({"valid":valid})
 
 
-# -------------------------------------------------
-# FORGOT PASSWORD
-# -------------------------------------------------
-
-@app.route("/forgot-password", methods=["GET","POST"])
-def forgot_password():
-
-    if request.method == "POST":
-
-        email = request.form.get("email")
-
-        conn = get_db()
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM users WHERE email=?", (email,))
-        user = c.fetchone()
-        conn.close()
-
-        if not user:
-            flash("Email not found")
-            return render_template("forgot_password.html")
-
-        flash("Password reset email sent (demo)")
-        return redirect(url_for("login"))
-
-    return render_template("forgot_password.html")
-
-
-# -------------------------------------------------
-# FORGOT USERNAME
-# -------------------------------------------------
-
-@app.route("/forgot-username", methods=["GET","POST"])
-def forgot_username():
-
-    if request.method == "POST":
-
-        email = request.form.get("email")
-
-        conn = get_db()
-        c = conn.cursor()
-
-        c.execute("SELECT username FROM users WHERE email=?", (email,))
-        user = c.fetchone()
-        conn.close()
-
-        if not user:
-            flash("Email not found")
-            return render_template("forgot_username.html")
-
-        flash(f"Your username is: {user['username']}")
-
-        return redirect(url_for("login"))
-
-    return render_template("forgot_username.html")
-
-
-# -------------------------------------------------
+# -----------------------------
 # LOGOUT
-# -------------------------------------------------
+# -----------------------------
 
 @app.route("/logout")
 def logout():
@@ -509,69 +332,14 @@ def logout():
     return redirect(url_for("login"))
 
 
-# -------------------------------------------------
-# ERROR HANDLER
-# -------------------------------------------------
-
-@app.errorhandler(500)
-def handle_error(e):
-    return redirect(url_for("login"))
-#------------------------------------------------------------
-# MY SHARE
-#------------------------------------------------------------
-
-@app.route("/my-shares")
-def my_shares():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("my_shares.html")
-@app.route("/share-file")
-def share_file():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("share_file.html")
-
-
-@app.route("/share-success")
-def share_success():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("share_success.html")
-
-
-@app.route("/view-shared-file")
-def view_shared_file():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    return render_template("view_shared_file.html")
-# -------------------------------------------------
-# START SERVER
-# -------------------------------------------------
+# -----------------------------
+# SERVER
+# -----------------------------
 
 init_db()
 
 if __name__ == "__main__":
 
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT",5000))
 
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=False
-    )
-
-
-
-
-
-
-
-
+    app.run(host="0.0.0.0",port=port,debug=False)
