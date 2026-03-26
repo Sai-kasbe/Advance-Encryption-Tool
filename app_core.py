@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "secret")
 
-DATABASE_URL = postgresql://encryption_db_64fb_user:ijfMnJV2s1rrlpPljUfI7ZEjPj4CO5FD@dpg-d72m072dbo4c73b8tb80-a.oregon-postgres.render.com/encryption_db_64fb
+DATABASE_URL = os.environ.get("postgresql://encryption_db_64fb_user:ijfMnJV2s1rrlpPljUfI7ZEjPj4CO5FD@dpg-d72m072dbo4c73b8tb80-a.oregon-postgres.render.com/encryption_db_64fb")
 EMAIL_USER = os.environ.get("EMAIL_USER")
 EMAIL_PASS = os.environ.get("EMAIL_PASS")
 
