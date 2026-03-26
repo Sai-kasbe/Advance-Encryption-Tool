@@ -165,5 +165,9 @@ app = create_app()
 # ================================
 # IMPORTANT: FOR GUNICORN
 # ================================
+import os
+from app_core import app   # ✅ correct import (no circular issue)
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
