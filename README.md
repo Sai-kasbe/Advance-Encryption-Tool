@@ -116,7 +116,7 @@ Sharing Module
 ## 📸 Project Screenshots
 
 ### Encryption Dashboard
-<img src="screenshots/encryption_dashboard.png" width="800">
+
 
 ### OTP Verification
 <img src="screenshots/otp_verification.png" width="800">
