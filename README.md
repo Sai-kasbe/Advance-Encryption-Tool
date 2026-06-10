@@ -126,7 +126,8 @@ Sharing Module
 
 
 ### Secure File Sharing
-<img src="screenshots/file_sharing.png" width="800">
+<img width="1999" height="1545" alt="image" src="https://github.com/user-attachments/assets/559a5c3e-ec02-42d0-864d-eb29ce384ab2" />
+
 
 ### Activity Dashboard
 <img src="screenshots/dashboard.png" width="800">
